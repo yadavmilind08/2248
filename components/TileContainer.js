@@ -61,6 +61,8 @@ const AnimatedPath = Animated.createAnimatedComponent(Path);
 export const TileContainer = () => {
   const [board, updateBoard] = useState(generateRandom(getEmptyBoard()));
   const [selectedRange, setSelectedRange] = useState([]);
+  const [score, setScore] = useState(0);
+  const [topScore, setTopScore] = useState(0);
 
   const [tGestureStart, setTGestureStart] = useState();
   const [tGestureMove, setTGestureMove] = useState();
@@ -139,6 +141,14 @@ export const TileContainer = () => {
   const changeBoardValues = () => {
     if (selectedRange.length >= 2) {
       let sum = 0;
+      const newScore = calculateScore(
+        board[selectedRange[0].row][selectedRange[0].col]
+      );
+      const totalScore = score + newScore;
+      setScore(totalScore);
+      if (totalScore >= topScore) {
+        setTopScore(totalScore);
+      }
       selectedRange.forEach((r, index) => {
         const newBoard = [...board];
         if (index === selectedRange.length - 1) {
@@ -151,6 +161,10 @@ export const TileContainer = () => {
         updateBoard(newBoard);
       });
     }
+  };
+
+  const calculateScore = (value) => {
+    return (selectedRange.length - 2) * value;
   };
 
   const panGesture = Gesture.Pan()
@@ -195,10 +209,6 @@ export const TileContainer = () => {
     };
   });
 
-  const touchEndHandler = () => {
-    console.log("Milind");
-  };
-
   return (
     // <GestureDetector gesture={panGesture}>
     //   {/* <Animated.View style={[styles.box, animatedStyle]} /> */}
@@ -210,19 +220,31 @@ export const TileContainer = () => {
     //     />
     //   </Svg>
 
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <GestureDetector style={{ flex: 1 }} gesture={panGesture}>
-        <View style={styles.boardStyle}>
-          {board.map((row, rowIndex) => (
-            <View key={`cell-${rowIndex}`} style={styles.rowStyle}>
-              {row.map((value, cellIndex) => (
-                <Tile key={`cell-${cellIndex}`} value={value} />
-              ))}
-            </View>
-          ))}
+    <View style={{ flex: 1 }}>
+      <View style={styles.displayScore}>
+        <View>
+          <Text style={styles.label}>Top Score</Text>
+          <Text style={styles.lableValue}>{topScore}</Text>
         </View>
-      </GestureDetector>
-    </GestureHandlerRootView>
+        <View>
+          <Text style={styles.label}>Score</Text>
+          <Text style={styles.lableValue}>{score}</Text>
+        </View>
+      </View>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <GestureDetector style={{ flex: 1 }} gesture={panGesture}>
+          <View style={styles.boardStyle}>
+            {board.map((row, rowIndex) => (
+              <View key={`cell-${rowIndex}`} style={styles.rowStyle}>
+                {row.map((value, cellIndex) => (
+                  <Tile key={`cell-${cellIndex}`} value={value} />
+                ))}
+              </View>
+            ))}
+          </View>
+        </GestureDetector>
+      </GestureHandlerRootView>
+    </View>
 
     // <View style={styles.boardStyle}>
     //   {board.map((row, rowIndex) => (
@@ -241,15 +263,24 @@ const styles = StyleSheet.create({
     width: width,
     padding: 5,
     backgroundColor: "#f2daa2",
-    marginTop: 200,
+    marginTop: 50,
   },
   rowStyle: {
     flexDirection: "row",
     height: width / 4,
   },
-  box: {
-    height: 50,
-    width: 50,
-    backgroundColor: "green",
+  displayScore: {
+    marginTop: 100,
+    flexDirection: "row",
+    marginHorizontal: 80,
+    justifyContent: "space-between",
+  },
+  label: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  lableValue: {
+    fontSize: 16,
+    fontWeight: "normal",
   },
 });
