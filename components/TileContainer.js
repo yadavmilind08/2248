@@ -60,7 +60,7 @@ const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 export const TileContainer = () => {
   const [board, updateBoard] = useState(generateRandom(getEmptyBoard()));
-  let selectedRange = [];
+  const [selectedRange, setSelectedRange] = useState([]);
 
   const [tGestureStart, setTGestureStart] = useState();
   const [tGestureMove, setTGestureMove] = useState();
@@ -116,7 +116,7 @@ export const TileContainer = () => {
       }
       return false;
     });
-    console.log({ range });
+    console.log({ range, selectedRange });
 
     if (
       range !== undefined &&
@@ -130,14 +130,13 @@ export const TileContainer = () => {
         ] === board[range.row][range.col]
       ) {
         const rgs = [...selectedRange, range];
-        selectedRange = [...rgs];
+        setSelectedRange(rgs);
       }
     }
     console.log({ selectedRange });
   };
 
   const changeBoardValues = () => {
-    console.log("end");
     if (selectedRange.length >= 2) {
       let sum = 0;
       selectedRange.forEach((r, index) => {
@@ -145,11 +144,9 @@ export const TileContainer = () => {
         if (index === selectedRange.length - 1) {
           sum = sum + newBoard[r.row][r.col];
           newBoard[r.row][r.col] = nearestPowerOfTwo(sum);
-          console.log("last", sum, newBoard);
         } else {
           sum = sum + newBoard[r.row][r.col];
           newBoard[r.row][r.col] = nearestPowerOfTwo(randomInteger(2, 8));
-          console.log("no last", newBoard);
         }
         updateBoard(newBoard);
       });
@@ -159,8 +156,8 @@ export const TileContainer = () => {
   const panGesture = Gesture.Pan()
     .onStart((g) => {
       console.log("start", { g });
-      selectedRange = [];
-      runOnJS(findObj)(g);
+      runOnJS(setSelectedRange)([]);
+      // runOnJS(findObj)(g);
       // setTGestureStart(`${Math.round(g.x)}, ${Math.round(g.y)}`);
     })
     .onTouchesMove((g) => {
@@ -177,8 +174,7 @@ export const TileContainer = () => {
       // setTGestureUpdate(`${Math.round(g.x)}, ${Math.round(g.y)}`);
     })
     .onEnd((g) => {
-      // console.log("end", { g });
-      runOnJS(findObj)(g);
+      console.log("end", { g });
       runOnJS(changeBoardValues)();
       // setTGestureEnd(`${Math.round(g.x)}, ${Math.round(g.y)}`);
     });
