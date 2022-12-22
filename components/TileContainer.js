@@ -1,113 +1,46 @@
-import { StyleSheet, View, Dimensions, Text, SafeAreaView } from "react-native";
-import { useState } from "react";
+import { StyleSheet, View, Dimensions, Text, Alert } from "react-native";
+import { useState, useEffect } from "react";
 import { Tile } from "./Tile";
 import {
   GestureHandlerRootView,
   GestureDetector,
   Gesture,
 } from "react-native-gesture-handler";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  useAnimatedProps,
-  runOnJS,
-} from "react-native-reanimated";
-import Svg, { Line, Path } from "react-native-svg";
-
-export const getEmptyBoard = () => [
-  [0, 0, 0, 0],
-  [0, 0, 0, 0],
-  [0, 0, 0, 0],
-  [0, 0, 0, 0],
-  [0, 0, 0, 0],
-  [0, 0, 0, 0],
-];
-
-export const randomInteger = (min, max) => {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-
-export const nearestPowerOfTwo = (num) => {
-  // dealing only with non-negative numbers
-  if (num < 0) {
-    num *= -1;
-  }
-  let base = 1;
-  while (base < num) {
-    if (num - base < Math.floor(base / 2)) {
-      return base;
-    }
-    base *= 2;
-  }
-  return base;
-};
-
-export const generateRandom = (board) => {
-  for (let row = 0; row < 6; row++) {
-    for (let col = 0; col < 4; col++) {
-      board[row][col] = nearestPowerOfTwo(randomInteger(2, 8));
-    }
-  }
-
-  return board;
-};
+import { runOnJS } from "react-native-reanimated";
+import Svg, { Path } from "react-native-svg";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  getEmptyBoard,
+  randomInteger,
+  nearestPowerOfTwo,
+  generateRandom,
+  ranges,
+  colors,
+} from "../util/board";
 
 var width = Dimensions.get("window").width;
-var height = Dimensions.get("window").height;
-
-const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 export const TileContainer = () => {
   const [board, updateBoard] = useState(generateRandom(getEmptyBoard()));
   const [selectedRange, setSelectedRange] = useState([]);
   const [score, setScore] = useState(0);
   const [topScore, setTopScore] = useState(0);
+  const [paths, setPaths] = useState([]);
 
-  const [tGestureStart, setTGestureStart] = useState();
-  const [tGestureMove, setTGestureMove] = useState();
-  const [tGestureUpdate, setTGestureUpdate] = useState();
-  const [tGestureEnd, setTGestureEnd] = useState();
+  useEffect(() => {
+    async function fetchTopScore() {
+      const storedTopScore = await AsyncStorage.getItem("topScore");
 
-  const END_POSITION = 200;
-  const onLeft = useSharedValue(true);
-  const position = useSharedValue(0);
+      if (storedTopScore) {
+        setTopScore(+storedTopScore);
+      }
+    }
 
-  const ranges = [
-    { row: 0, col: 0, x1: 50, x2: 100, y1: 50, y2: 100 },
-    { row: 0, col: 1, x1: 150, x2: 200, y1: 50, y2: 100 },
-    { row: 0, col: 2, x1: 250, x2: 300, y1: 50, y2: 100 },
-    { row: 0, col: 3, x1: 350, x2: 400, y1: 50, y2: 100 },
-
-    { row: 1, col: 0, x1: 50, x2: 100, y1: 150, y2: 200 },
-    { row: 1, col: 1, x1: 150, x2: 200, y1: 150, y2: 200 },
-    { row: 1, col: 2, x1: 250, x2: 300, y1: 150, y2: 200 },
-    { row: 1, col: 3, x1: 350, x2: 400, y1: 150, y2: 200 },
-
-    { row: 2, col: 0, x1: 50, x2: 100, y1: 250, y2: 300 },
-    { row: 2, col: 1, x1: 150, x2: 200, y1: 250, y2: 300 },
-    { row: 2, col: 2, x1: 250, x2: 300, y1: 250, y2: 300 },
-    { row: 2, col: 3, x1: 350, x2: 400, y1: 250, y2: 300 },
-
-    { row: 3, col: 0, x1: 50, x2: 100, y1: 350, y2: 400 },
-    { row: 3, col: 1, x1: 150, x2: 200, y1: 350, y2: 400 },
-    { row: 3, col: 2, x1: 250, x2: 300, y1: 350, y2: 400 },
-    { row: 3, col: 3, x1: 350, x2: 400, y1: 350, y2: 400 },
-
-    { row: 4, col: 0, x1: 50, x2: 100, y1: 450, y2: 500 },
-    { row: 4, col: 1, x1: 150, x2: 200, y1: 450, y2: 500 },
-    { row: 4, col: 2, x1: 250, x2: 300, y1: 450, y2: 500 },
-    { row: 4, col: 3, x1: 350, x2: 400, y1: 450, y2: 500 },
-
-    { row: 5, col: 0, x1: 50, x2: 100, y1: 550, y2: 600 },
-    { row: 5, col: 1, x1: 150, x2: 200, y1: 550, y2: 600 },
-    { row: 5, col: 2, x1: 250, x2: 300, y1: 550, y2: 600 },
-    { row: 5, col: 3, x1: 350, x2: 400, y1: 550, y2: 600 },
-  ];
+    fetchTopScore();
+  }, []);
 
   const findObj = (g) => {
     const range = ranges.find((range) => {
-      console.log("val", g.x, g.y);
       if (
         range.x1 <= g.x &&
         g.x <= range.x2 &&
@@ -118,7 +51,6 @@ export const TileContainer = () => {
       }
       return false;
     });
-    console.log({ range, selectedRange });
 
     if (
       range !== undefined &&
@@ -135,7 +67,6 @@ export const TileContainer = () => {
         setSelectedRange(rgs);
       }
     }
-    console.log({ selectedRange });
   };
 
   const changeBoardValues = () => {
@@ -148,12 +79,18 @@ export const TileContainer = () => {
       setScore(totalScore);
       if (totalScore >= topScore) {
         setTopScore(totalScore);
+        AsyncStorage.setItem("topScore", totalScore.toString());
       }
       selectedRange.forEach((r, index) => {
         const newBoard = [...board];
         if (index === selectedRange.length - 1) {
           sum = sum + newBoard[r.row][r.col];
           newBoard[r.row][r.col] = nearestPowerOfTwo(sum);
+          if (nearestPowerOfTwo(sum) === 2048) {
+            Alert.alert("Game End", "Congratulations! You have done it.", [
+              { text: "Restart", onPress: () => onRestartGame() },
+            ]);
+          }
         } else {
           sum = sum + newBoard[r.row][r.col];
           newBoard[r.row][r.col] = nearestPowerOfTwo(randomInteger(2, 8));
@@ -163,63 +100,65 @@ export const TileContainer = () => {
     }
   };
 
+  const onRestartGame = () => {
+    updateBoard(generateRandom(getEmptyBoard()));
+    setSelectedRange([]);
+    setScore(0);
+    setPaths([]);
+  };
+
+  const startPath = (g) => {
+    const range = ranges.find((range) => {
+      if (
+        range.x1 <= g.x &&
+        g.x <= range.x2 &&
+        range.y1 <= g.y &&
+        g.y <= range.y2
+      ) {
+        return true;
+      }
+      return false;
+    });
+
+    if (range !== undefined) {
+      const newPaths = [...paths];
+      newPaths[paths.length] = {
+        segments: [],
+        color: colors[board[range.row][range.col]],
+      };
+      newPaths[paths.length].segments.push(`M ${g.x} ${g.y}`);
+      setPaths(newPaths);
+    }
+  };
+
+  const updatePath = (g) => {
+    const index = paths.length - 1;
+    const newPaths = [...paths];
+    if (newPaths?.[index]?.segments) {
+      newPaths[index].segments.push(`L ${g.x} ${g.y}`);
+      setPaths(newPaths);
+    }
+  };
+
   const calculateScore = (value) => {
     return (selectedRange.length - 2) * value;
   };
 
   const panGesture = Gesture.Pan()
     .onStart((g) => {
-      console.log("start", { g });
       runOnJS(setSelectedRange)([]);
-      // runOnJS(findObj)(g);
-      // setTGestureStart(`${Math.round(g.x)}, ${Math.round(g.y)}`);
-    })
-    .onTouchesMove((g) => {
-      // console.log("move", { g });
-      // setTGestureMove(
-      //   `${Math.round(g.changedTouches[0].x)}, ${Math.round(
-      //     g.changedTouches[0].y
-      //   )}`
-      // );
+      runOnJS(startPath)(g);
     })
     .onUpdate((g) => {
-      console.log("update", { g });
       runOnJS(findObj)(g);
-      // setTGestureUpdate(`${Math.round(g.x)}, ${Math.round(g.y)}`);
+      runOnJS(updatePath)(g);
     })
     .onEnd((g) => {
-      console.log("end", { g });
       runOnJS(changeBoardValues)();
-      // setTGestureEnd(`${Math.round(g.x)}, ${Math.round(g.y)}`);
+      runOnJS(setPaths)([]);
     });
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: position.value }],
-  }));
-
-  const radius = useSharedValue(50);
-
-  const animatedProps = useAnimatedProps(() => {
-    // draw a circle
-    const path = `
-    M10 60 L90 90 V10 H50
-    `;
-    return {
-      d: path,
-    };
-  });
-
   return (
-    // <GestureDetector gesture={panGesture}>
-    //   {/* <Animated.View style={[styles.box, animatedStyle]} /> */}
-    //   <Svg height={height} width={width}>
-    //     <AnimatedPath
-    //       animatedProps={animatedProps}
-    //       stroke="#4ade80"
-    //       strokeWidth="24"
-    //     />
-    //   </Svg>
-
     <View style={{ flex: 1 }}>
       <View style={styles.displayScore}>
         <View>
@@ -237,24 +176,29 @@ export const TileContainer = () => {
             {board.map((row, rowIndex) => (
               <View key={`cell-${rowIndex}`} style={styles.rowStyle}>
                 {row.map((value, cellIndex) => (
-                  <Tile key={`cell-${cellIndex}`} value={value} />
+                  <Tile
+                    key={`cell-${cellIndex}`}
+                    cellIndex={cellIndex}
+                    rowIndex={rowIndex}
+                    value={value}
+                  />
                 ))}
               </View>
             ))}
+            <Svg style={styles.svgPath}>
+              {paths.map((p, index) => (
+                <Path
+                  key={index}
+                  d={p.segments.join(" ")}
+                  strokeWidth={20}
+                  stroke={p.color}
+                />
+              ))}
+            </Svg>
           </View>
         </GestureDetector>
       </GestureHandlerRootView>
     </View>
-
-    // <View style={styles.boardStyle}>
-    //   {board.map((row, rowIndex) => (
-    //     <View key={`cell-${rowIndex}`} style={styles.rowStyle}>
-    //       {row.map((value, cellIndex) => (
-    //         <Tile key={`cell-${cellIndex}`} value={value} />
-    //       ))}
-    //     </View>
-    //   ))}
-    // </View>
   );
 };
 
@@ -264,6 +208,8 @@ const styles = StyleSheet.create({
     padding: 5,
     backgroundColor: "#f2daa2",
     marginTop: 50,
+    zIndex: 2,
+    elevation: 2,
   },
   rowStyle: {
     flexDirection: "row",
@@ -282,5 +228,10 @@ const styles = StyleSheet.create({
   lableValue: {
     fontSize: 16,
     fontWeight: "normal",
+  },
+  svgPath: {
+    position: "absolute",
+    zIndex: 1,
+    elevation: 1,
   },
 });
