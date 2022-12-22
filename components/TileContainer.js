@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     width: width,
     padding: 5,
     backgroundColor: "#f2daa2",
-    marginTop: 50,
+    marginTop: 30,
     zIndex: 2,
     elevation: 2,
   },
@@ -215,11 +215,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     height: width / 4,
   },
+  svgPath: {
+    position: "absolute",
+    zIndex: 1,
+    elevation: 1,
+  },
   displayScore: {
-    marginTop: 100,
     flexDirection: "row",
     marginHorizontal: 80,
     justifyContent: "space-between",
+    marginTop: 30,
   },
   label: {
     fontSize: 20,
@@ -228,10 +233,5 @@ const styles = StyleSheet.create({
   lableValue: {
     fontSize: 16,
     fontWeight: "normal",
-  },
-  svgPath: {
-    position: "absolute",
-    zIndex: 1,
-    elevation: 1,
   },
 });
