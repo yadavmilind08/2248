@@ -5,7 +5,7 @@ export const GameBoardScreen = () => {
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.headerSection}>
-        <Text style={styles.label}>2048</Text>
+        <Text style={styles.label}>2248</Text>
       </View>
       <TileContainer />
     </View>

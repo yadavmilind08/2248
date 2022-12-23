@@ -7,29 +7,18 @@ export const getEmptyBoard = () => [
   [0, 0, 0, 0],
 ];
 
-export const randomInteger = (min, max) => {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+export const getRandomNumber = () => {
+  return Math.pow(2, Math.floor(Math.random() * 3 + 1));
 };
 
-export const nearestPowerOfTwo = (num) => {
-  // dealing only with non-negative numbers
-  if (num < 0) {
-    num *= -1;
-  }
-  let base = 1;
-  while (base < num) {
-    if (num - base < Math.floor(base / 2)) {
-      return base;
-    }
-    base *= 2;
-  }
-  return base;
+export const getNearestPowerOfTwo = (num) => {
+  return Math.pow(2, Math.floor(Math.log(num) / Math.log(2)));
 };
 
-export const generateRandom = (board) => {
+export const generateRandomBoard = (board) => {
   for (let row = 0; row < 6; row++) {
     for (let col = 0; col < 4; col++) {
-      board[row][col] = nearestPowerOfTwo(randomInteger(2, 8));
+      board[row][col] = getRandomNumber();
     }
   }
 

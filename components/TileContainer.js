@@ -11,9 +11,9 @@ import Svg, { Path } from "react-native-svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   getEmptyBoard,
-  randomInteger,
-  nearestPowerOfTwo,
-  generateRandom,
+  getRandomNumber,
+  getNearestPowerOfTwo,
+  generateRandomBoard,
   ranges,
   colors,
 } from "../util/board";
@@ -21,7 +21,7 @@ import {
 var width = Dimensions.get("window").width;
 
 export const TileContainer = () => {
-  const [board, updateBoard] = useState(generateRandom(getEmptyBoard()));
+  const [board, updateBoard] = useState(generateRandomBoard(getEmptyBoard()));
   const [selectedRange, setSelectedRange] = useState([]);
   const [score, setScore] = useState(0);
   const [topScore, setTopScore] = useState(0);
@@ -85,15 +85,15 @@ export const TileContainer = () => {
         const newBoard = [...board];
         if (index === selectedRange.length - 1) {
           sum = sum + newBoard[r.row][r.col];
-          newBoard[r.row][r.col] = nearestPowerOfTwo(sum);
-          if (nearestPowerOfTwo(sum) === 2048) {
+          newBoard[r.row][r.col] = getNearestPowerOfTwo(sum);
+          if (getNearestPowerOfTwo(sum) === 2048) {
             Alert.alert("Game End", "Congratulations! You have done it.", [
               { text: "Restart", onPress: () => onRestartGame() },
             ]);
           }
         } else {
           sum = sum + newBoard[r.row][r.col];
-          newBoard[r.row][r.col] = nearestPowerOfTwo(randomInteger(2, 8));
+          newBoard[r.row][r.col] = getRandomNumber();
         }
         updateBoard(newBoard);
       });
@@ -101,7 +101,7 @@ export const TileContainer = () => {
   };
 
   const onRestartGame = () => {
-    updateBoard(generateRandom(getEmptyBoard()));
+    updateBoard(generateRandomBoard(getEmptyBoard()));
     setSelectedRange([]);
     setScore(0);
     setPaths([]);
@@ -176,12 +176,7 @@ export const TileContainer = () => {
             {board.map((row, rowIndex) => (
               <View key={`cell-${rowIndex}`} style={styles.rowStyle}>
                 {row.map((value, cellIndex) => (
-                  <Tile
-                    key={`cell-${cellIndex}`}
-                    cellIndex={cellIndex}
-                    rowIndex={rowIndex}
-                    value={value}
-                  />
+                  <Tile key={`cell-${cellIndex}`} value={value} />
                 ))}
               </View>
             ))}
