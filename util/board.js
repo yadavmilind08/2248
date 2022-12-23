@@ -26,17 +26,17 @@ export const generateRandomBoard = (board) => {
 };
 
 export const colors = {
-  2: "orange",
-  4: "rgb(39, 207, 207)",
-  8: "pink",
-  16: "gold",
-  32: "greenyellow",
+  2: "#ffa500",
+  4: "#27cfcf",
+  8: "#ffc0cb",
+  16: "#ffd700",
+  32: "#adff2f",
   64: "#e9c46a",
-  128: "goldenrod",
-  256: "rebeccapurple",
-  512: "cyan",
-  1024: "gold",
-  2048: "aquamarine",
+  128: "#daa520",
+  256: "#663399",
+  512: "#00ffff",
+  1024: "#6a5ab0",
+  2048: "#7fffd4",
 };
 
 export const ranges = [

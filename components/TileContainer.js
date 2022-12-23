@@ -173,13 +173,6 @@ export const TileContainer = () => {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <GestureDetector style={{ flex: 1 }} gesture={panGesture}>
           <View style={styles.boardStyle}>
-            {board.map((row, rowIndex) => (
-              <View key={`cell-${rowIndex}`} style={styles.rowStyle}>
-                {row.map((value, cellIndex) => (
-                  <Tile key={`cell-${cellIndex}`} value={value} />
-                ))}
-              </View>
-            ))}
             <Svg style={styles.svgPath}>
               {paths.map((p, index) => (
                 <Path
@@ -190,6 +183,13 @@ export const TileContainer = () => {
                 />
               ))}
             </Svg>
+            {board.map((row, rowIndex) => (
+              <View key={`cell-${rowIndex}`} style={styles.rowStyle}>
+                {row.map((value, cellIndex) => (
+                  <Tile key={`cell-${cellIndex}`} value={value} />
+                ))}
+              </View>
+            ))}
           </View>
         </GestureDetector>
       </GestureHandlerRootView>
@@ -203,8 +203,6 @@ const styles = StyleSheet.create({
     padding: 5,
     backgroundColor: "#f2daa2",
     marginTop: 30,
-    zIndex: 2,
-    elevation: 2,
   },
   rowStyle: {
     flexDirection: "row",
@@ -212,8 +210,6 @@ const styles = StyleSheet.create({
   },
   svgPath: {
     position: "absolute",
-    zIndex: 1,
-    elevation: 1,
   },
   displayScore: {
     flexDirection: "row",

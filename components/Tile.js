@@ -3,14 +3,14 @@ import { StyleSheet, View, Text } from "react-native";
 export const Tile = ({ value }) => {
   return (
     <View style={[styles.cellStyle, styles[`cell${value}`]]}>
-      <Text style={styles.textStyle}>{value > 0 ? value : ""}</Text>
+      <Text style={styles.textStyle}>{value}</Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   cellStyle: {
-    backgroundColor: "rgba(255, 255, 255, 0.5)",
+    backgroundColor: "#f0f2f0",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
@@ -18,37 +18,37 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   cell2: {
-    backgroundColor: "orange",
+    backgroundColor: "#ffa500",
   },
   cell4: {
-    backgroundColor: "rgb(39, 207, 207)",
+    backgroundColor: "#27cfcf",
   },
   cell8: {
-    backgroundColor: "pink",
+    backgroundColor: "#ffc0cb",
   },
   cell16: {
-    backgroundColor: "gold",
+    backgroundColor: "#ffd700",
   },
   cell32: {
-    backgroundColor: "greenyellow",
+    backgroundColor: "#adff2f",
   },
   cell64: {
     backgroundColor: "#e9c46a",
   },
   cell128: {
-    backgroundColor: "goldenrod",
+    backgroundColor: "#daa520",
   },
   cell256: {
-    backgroundColor: "rebeccapurple",
+    backgroundColor: "#663399",
   },
   cell512: {
-    backgroundColor: "cyan",
+    backgroundColor: "#00ffff",
   },
   cell1024: {
-    backgroundColor: "gold",
+    backgroundColor: "#6a5ab0",
   },
   cell2048: {
-    backgroundColor: "aquamarine",
+    backgroundColor: "#7fffd4",
   },
   textStyle: {
     fontSize: 30,
