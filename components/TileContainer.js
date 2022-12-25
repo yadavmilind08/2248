@@ -14,11 +14,11 @@ import {
   getRandomNumber,
   getNearestPowerOfTwo,
   generateRandomBoard,
-  ranges,
   colors,
 } from "../util/board";
 
 var width = Dimensions.get("window").width;
+const ranges = [];
 
 export const TileContainer = () => {
   const [board, updateBoard] = useState(generateRandomBoard(getEmptyBoard()));
@@ -158,6 +158,19 @@ export const TileContainer = () => {
       runOnJS(setPaths)([]);
     });
 
+  onCellLayout = (event, rowIndex, cellIndex) => {
+    const { height, width, x, y } = event.nativeEvent.layout;
+    const range = {
+      row: rowIndex,
+      col: cellIndex,
+      x1: x,
+      x2: x + width,
+      y1: y + rowIndex * (height + 2 * y),
+      y2: y + height + rowIndex * (height + 2 * y),
+    };
+    ranges.push(range);
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.displayScore}>
@@ -184,9 +197,19 @@ export const TileContainer = () => {
               ))}
             </Svg>
             {board.map((row, rowIndex) => (
-              <View key={`cell-${rowIndex}`} style={styles.rowStyle}>
+              <View
+                key={`cell-${rowIndex}`}
+                style={styles.rowStyle}
+                onLayout={(event) => onRowLayout(event, rowIndex)}
+              >
                 {row.map((value, cellIndex) => (
-                  <Tile key={`cell-${cellIndex}`} value={value} />
+                  <Tile
+                    key={`cell-${cellIndex}`}
+                    value={value}
+                    onCellLayout={(event) =>
+                      onCellLayout(event, rowIndex, cellIndex)
+                    }
+                  />
                 ))}
               </View>
             ))}
@@ -200,7 +223,6 @@ export const TileContainer = () => {
 const styles = StyleSheet.create({
   boardStyle: {
     width: width,
-    padding: 5,
     backgroundColor: "#f2daa2",
     marginTop: 30,
   },

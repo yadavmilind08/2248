@@ -1,8 +1,11 @@
 import { StyleSheet, View, Text } from "react-native";
 
-export const Tile = ({ value }) => {
+export const Tile = ({ value, onCellLayout }) => {
   return (
-    <View style={[styles.cellStyle, styles[`cell${value}`]]}>
+    <View
+      style={[styles.cellStyle, styles[`cell${value}`]]}
+      onLayout={onCellLayout}
+    >
       <Text style={styles.textStyle}>{value}</Text>
     </View>
   );
