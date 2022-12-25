@@ -39,29 +39,27 @@ export const TileContainer = () => {
     fetchTopScore();
   }, []);
 
-  const findObj = (g) => {
-    const range = ranges.find((range) => {
-      if (
-        range.x1 <= g.x &&
-        g.x <= range.x2 &&
-        range.y1 <= g.y &&
-        g.y <= range.y2
-      ) {
-        return true;
-      }
-      return false;
-    });
+  const addTile = (g) => {
+    const range = ranges.find(
+      (range) =>
+        range.x1 <= g.x && g.x <= range.x2 && range.y1 <= g.y && g.y <= range.y2
+    );
 
     if (
       range !== undefined &&
       selectedRange.find((r) => r.row === range.row && r.col === range.col) ===
         undefined
     ) {
+      const lastRangeIndex = selectedRange.length - 1;
       if (
         selectedRange.length === 0 ||
-        board[selectedRange[selectedRange.length - 1].row][
-          selectedRange[selectedRange.length - 1].col
-        ] === board[range.row][range.col]
+        (board[selectedRange[lastRangeIndex].row][
+          selectedRange[lastRangeIndex].col
+        ] === board[range.row][range.col] &&
+          range.row - 1 <= selectedRange[lastRangeIndex].row &&
+          selectedRange[lastRangeIndex].row <= range.row + 1 &&
+          range.col - 1 <= selectedRange[lastRangeIndex].col &&
+          selectedRange[lastRangeIndex].col <= range.col + 1)
       ) {
         const rgs = [...selectedRange, range];
         setSelectedRange(rgs);
@@ -108,17 +106,10 @@ export const TileContainer = () => {
   };
 
   const startPath = (g) => {
-    const range = ranges.find((range) => {
-      if (
-        range.x1 <= g.x &&
-        g.x <= range.x2 &&
-        range.y1 <= g.y &&
-        g.y <= range.y2
-      ) {
-        return true;
-      }
-      return false;
-    });
+    const range = ranges.find(
+      (range) =>
+        range.x1 <= g.x && g.x <= range.x2 && range.y1 <= g.y && g.y <= range.y2
+    );
 
     if (range !== undefined) {
       const x = (range.x1 + range.x2) / 2;
@@ -152,7 +143,7 @@ export const TileContainer = () => {
       runOnJS(startPath)(g);
     })
     .onUpdate((g) => {
-      runOnJS(findObj)(g);
+      runOnJS(addTile)(g);
       runOnJS(updatePath)(g);
     })
     .onEnd((g) => {
