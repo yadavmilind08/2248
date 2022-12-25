@@ -197,11 +197,7 @@ export const TileContainer = () => {
               ))}
             </Svg>
             {board.map((row, rowIndex) => (
-              <View
-                key={`cell-${rowIndex}`}
-                style={styles.rowStyle}
-                onLayout={(event) => onRowLayout(event, rowIndex)}
-              >
+              <View key={`cell-${rowIndex}`} style={styles.rowStyle}>
                 {row.map((value, cellIndex) => (
                   <Tile
                     key={`cell-${cellIndex}`}
