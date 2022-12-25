@@ -121,12 +121,14 @@ export const TileContainer = () => {
     });
 
     if (range !== undefined) {
+      const x = (range.x1 + range.x2) / 2;
+      const y = (range.y1 + range.y2) / 2;
       const newPaths = [...paths];
       newPaths[paths.length] = {
         segments: [],
         color: colors[board[range.row][range.col]],
       };
-      newPaths[paths.length].segments.push(`M ${g.x} ${g.y}`);
+      newPaths[paths.length].segments.push(`M ${x} ${y}`);
       setPaths(newPaths);
     }
   };
