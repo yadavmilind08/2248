@@ -7,7 +7,7 @@ import {
   Gesture,
 } from "react-native-gesture-handler";
 import { runOnJS } from "react-native-reanimated";
-import Svg, { Path } from "react-native-svg";
+import Svg, { Line } from "react-native-svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   getEmptyBoard,
@@ -63,6 +63,38 @@ export const TileContainer = () => {
       ) {
         const rgs = [...selectedRange, range];
         setSelectedRange(rgs);
+
+        const x = (range.x1 + range.x2) / 2;
+        const y = (range.y1 + range.y2) / 2;
+        const newPaths = [...paths];
+        if (newPaths.length) {
+          const index = newPaths.length - 1;
+          newPaths[index] = {
+            ...newPaths[index],
+            x2: x,
+            y2: y,
+          };
+          setPaths(newPaths);
+        }
+        newPaths.push({
+          x1: x,
+          y1: y,
+          x2: x,
+          y2: y,
+          color: colors[board[range.row][range.col]],
+        });
+        setPaths(newPaths);
+      }
+    } else {
+      const newPaths = [...paths];
+      if (newPaths.length) {
+        const index = newPaths.length - 1;
+        newPaths[index] = {
+          ...newPaths[index],
+          x2: g.x,
+          y2: g.y,
+        };
+        setPaths(newPaths);
       }
     }
   };
@@ -105,49 +137,17 @@ export const TileContainer = () => {
     setPaths([]);
   };
 
-  const startPath = (g) => {
-    const range = ranges.find(
-      (range) =>
-        range.x1 <= g.x && g.x <= range.x2 && range.y1 <= g.y && g.y <= range.y2
-    );
-
-    if (range !== undefined) {
-      const x = (range.x1 + range.x2) / 2;
-      const y = (range.y1 + range.y2) / 2;
-      const newPaths = [...paths];
-      newPaths[paths.length] = {
-        segments: [],
-        color: colors[board[range.row][range.col]],
-      };
-      newPaths[paths.length].segments.push(`M ${x} ${y}`);
-      setPaths(newPaths);
-    }
-  };
-
-  const updatePath = (g) => {
-    const index = paths.length - 1;
-    const newPaths = [...paths];
-    if (newPaths?.[index]?.segments) {
-      newPaths[index].segments.push(`L ${g.x} ${g.y}`);
-      setPaths(newPaths);
-    }
-  };
-
   const calculateScore = (value) => {
     return (selectedRange.length - 2) * value;
   };
 
   const panGesture = Gesture.Pan()
-    .onStart((g) => {
-      runOnJS(setSelectedRange)([]);
-      runOnJS(startPath)(g);
-    })
     .onUpdate((g) => {
       runOnJS(addTile)(g);
-      runOnJS(updatePath)(g);
     })
     .onEnd((g) => {
       runOnJS(changeBoardValues)();
+      runOnJS(setSelectedRange)([]);
       runOnJS(setPaths)([]);
     });
 
@@ -181,9 +181,12 @@ export const TileContainer = () => {
           <View style={styles.boardStyle}>
             <Svg style={styles.svgPath}>
               {paths.map((p, index) => (
-                <Path
+                <Line
                   key={index}
-                  d={p.segments.join(" ")}
+                  x1={p.x1}
+                  y1={p.y1}
+                  x2={p.x2}
+                  y2={p.y2}
                   strokeWidth={20}
                   stroke={p.color}
                 />
