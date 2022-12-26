@@ -169,11 +169,15 @@ export const TileContainer = () => {
       <View style={styles.displayScore}>
         <View>
           <Text style={styles.label}>Top Score</Text>
-          <Text style={styles.lableValue}>{topScore}</Text>
+          <View style={styles.labelContainer}>
+            <Text style={styles.lableValue}>{topScore}</Text>
+          </View>
         </View>
         <View>
           <Text style={styles.label}>Score</Text>
-          <Text style={styles.lableValue}>{score}</Text>
+          <View style={styles.labelContainer}>
+            <Text style={styles.lableValue}>{score}</Text>
+          </View>
         </View>
       </View>
       <GestureHandlerRootView style={{ flex: 1 }}>
@@ -234,6 +238,10 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 20,
     fontWeight: "bold",
+  },
+  labelContainer: {
+    marginTop: 5,
+    alignItems: "center",
   },
   lableValue: {
     fontSize: 16,
