@@ -187,7 +187,7 @@ export const TileContainer = () => {
                   y1={p.y1}
                   x2={p.x2}
                   y2={p.y2}
-                  strokeWidth={20}
+                  strokeWidth={16}
                   stroke={p.color}
                 />
               ))}
