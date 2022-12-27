@@ -1,5 +1,5 @@
 import { StyleSheet, View, Text } from "react-native";
-import { colors } from "../util/board";
+import { colors } from "../constants/color";
 
 export const Tile = ({ value, onCellLayout }) => {
   return (

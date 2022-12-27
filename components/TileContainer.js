@@ -14,8 +14,8 @@ import {
   getRandomNumber,
   getNearestPowerOfTwo,
   generateRandomBoard,
-  colors,
 } from "../util/board";
+import { colors } from "../constants/color";
 
 var width = Dimensions.get("window").width;
 const ranges = [];
